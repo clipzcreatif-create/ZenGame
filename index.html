@@ -11,10 +11,11 @@
             font-family: 'Courier New', Courier, monospace;
             background-color: #87CEEB;
             user-select: none;
-            touch-action: none; /* Mencegah zoom/scroll di HP */
+            touch-action: none; 
             -webkit-touch-callout: none;
         }
 
+        /* --- UI UTAMA --- */
         #ui-container {
             position: absolute;
             top: 20px;
@@ -25,36 +26,37 @@
             z-index: 10;
         }
 
-        h1 {
-            margin: 0;
-            font-size: 24px;
-            color: #FFFF55;
-        }
+        h1 { margin: 0; font-size: 24px; color: #FFFF55; }
+        #status { font-size: 18px; margin-top: 10px; font-weight: bold; }
+        #controls-hint { font-size: 14px; color: #ddd; margin-top: 5px; }
 
-        #status {
-            font-size: 18px;
-            margin-top: 10px;
-            font-weight: bold;
-        }
-
-        #controls-hint {
-            font-size: 14px;
-            color: #ddd;
+        /* CURRENCY DISPLAY */
+        .cp-display {
+            font-size: 20px;
+            color: #FFD700;
             margin-top: 5px;
+            font-weight: bold;
+            background: rgba(0,0,0,0.5);
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: 2px solid #fff;
         }
 
+        /* INVENTORY */
         #inventory {
             position: absolute;
             top: 20px;
             right: 20px;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.7);
             padding: 10px;
             border: 3px solid #ddd;
             border-radius: 4px;
             color: white;
-            font-family: 'Courier New', Courier, monospace;
             min-width: 180px;
             z-index: 10;
+            max-height: 200px;
+            overflow-y: auto;
         }
 
         .inv-title {
@@ -67,185 +69,176 @@
         }
 
         .item-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 4px;
-            border-radius: 4px;
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 6px; background: rgba(255, 255, 255, 0.1);
+            padding: 4px; border-radius: 4px; font-size: 14px;
         }
 
-        .item-icon {
-            font-size: 20px;
-            margin-right: 8px;
-        }
-
-        .item-name {
-            flex-grow: 1;
-            font-size: 14px;
-        }
-
-        .item-count {
+        /* BUTTONS (SHOP & TRAVEL) */
+        .game-btn {
+            position: absolute;
+            bottom: 20px;
+            width: 80px;
+            height: 80px;
+            border: 4px solid #fff;
             font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            z-index: 20;
+            font-family: inherit;
+            box-shadow: 4px 4px 0 #000;
+            font-size: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .game-btn:active { transform: translateY(4px); box-shadow: 0 0 0 #000; }
+
+        #shop-btn {
+            right: 20px;
+            background: #5D4037; /* Coklat Kayu */
             color: #FFFF55;
         }
 
-        #instruction {
-            position: absolute;
-            bottom: 50px;
-            width: 100%;
+        #travel-btn {
+            right: 110px; /* Di sebelah kiri toko */
+            background: #0077be; /* Biru Laut */
+            color: #fff;
+            display: none; /* Sembunyi kalau belum beli */
+        }
+
+        /* Notification Toast for Cheat */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
             text-align: center;
+            border-radius: 2px;
+            padding: 16px;
+            position: fixed;
+            z-index: 100;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 17px;
+            border: 2px solid #FFFF55;
+            box-shadow: 0 0 10px #FFFF55;
+        }
+
+        #shop-modal {
+            display: none;
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%; max-width: 400px;
+            background: #333;
+            border: 4px solid #fff;
             color: white;
-            font-size: 20px;
+            z-index: 100;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            border-radius: 8px;
+        }
+
+        .shop-header {
+            text-align: center; font-size: 24px; color: #FFFF55;
+            border-bottom: 2px solid #fff; padding-bottom: 10px; margin-bottom: 15px;
+        }
+
+        .shop-item {
+            background: rgba(255,255,255,0.1);
+            margin-bottom: 10px;
+            padding: 10px;
+            display: flex; justify-content: space-between; align-items: center;
+            border: 1px solid #777;
+        }
+
+        .shop-action-btn {
+            background: #4CAF50; color: white; border: 2px solid #fff;
+            padding: 5px 10px; font-family: inherit; cursor: pointer;
+        }
+        .shop-action-btn:disabled { background: #555; cursor: not-allowed; opacity: 0.7; }
+        .close-shop {
+            background: #f44336; width: 100%; margin-top: 10px;
+            padding: 10px; color: white; font-weight: bold; border: 2px solid #fff;
+        }
+
+        /* MINIGAME & OTHER UI */
+        #instruction {
+            position: absolute; bottom: 120px; width: 100%;
+            text-align: center; color: white; font-size: 20px;
             text-shadow: 2px 2px 0 #000;
-            animation: pulse 1.5s infinite;
-            pointer-events: none;
-            display: block;
-            z-index: 5;
+            animation: pulse 1.5s infinite; pointer-events: none; z-index: 5;
         }
 
         #minigame-container {
-            position: absolute;
-            bottom: 150px; /* Naikkan dikit biar gak ketutup tombol HP */
-            left: 50%;
-            transform: translateX(-50%);
-            width: 300px;
-            height: 40px;
-            background: #222;
-            border: 4px solid white;
-            display: none;
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
-            border-radius: 8px;
-            overflow: hidden;
-            z-index: 20;
+            position: absolute; bottom: 160px; left: 50%;
+            transform: translateX(-50%); width: 300px; height: 40px;
+            background: #222; border: 4px solid white; display: none;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5); border-radius: 8px;
+            overflow: hidden; z-index: 20;
         }
 
         #minigame-bar {
-            width: 50%;
-            height: 100%;
+            width: 50%; height: 100%;
             background: linear-gradient(90deg, #ff3333, #ffff33, #33ff33);
-            transition: width 0.05s linear;
-        }
-
-        #minigame-target-line {
-            position: absolute;
-            right: 10%;
-            top: 0;
-            height: 100%;
-            width: 4px;
-            background: rgba(255, 255, 255, 0.5);
-            z-index: 21;
         }
 
         #minigame-text {
-            position: absolute;
-            top: -35px;
-            width: 100%;
-            text-align: center;
-            color: #FFFF55;
-            font-weight: bold;
-            text-shadow: 2px 2px 0 #000;
-            font-size: 18px;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+            position: absolute; top: -35px; width: 100%;
+            text-align: center; color: #FFFF55; font-weight: bold;
+            text-shadow: 2px 2px 0 #000; font-size: 18px;
         }
 
         #loading {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #222;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 999;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #222; color: white; display: flex;
+            justify-content: center; align-items: center; z-index: 999;
             font-size: 24px;
         }
 
-        /* --- MOBILE CONTROLS --- */
+        /* MOBILE CONTROLS */
         .mobile-controls {
-            display: none; /* Default hidden */
-            position: absolute;
-            bottom: 20px;
-            width: 100%;
-            height: 150px;
-            pointer-events: none; /* Biar area kosong bisa ditap buat minigame */
-            z-index: 50;
+            display: none; position: absolute; bottom: 20px;
+            width: 100%; height: 150px; pointer-events: none; z-index: 50;
         }
-
-        /* D-PAD */
         .dpad {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            width: 120px;
-            height: 120px;
-            pointer-events: auto;
+            position: absolute; bottom: 20px; left: 20px;
+            width: 120px; height: 120px; pointer-events: auto;
         }
-
         .dpad-btn {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.3);
+            position: absolute; background: rgba(255, 255, 255, 0.3);
             border: 2px solid rgba(255, 255, 255, 0.5);
-            border-radius: 8px;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 20px;
-            color: white;
-            user-select: none;
+            border-radius: 8px; width: 40px; height: 40px;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 20px; color: white;
         }
-        .dpad-btn:active { background: rgba(255, 255, 255, 0.6); }
-
         .d-up { top: 0; left: 40px; }
         .d-down { bottom: 0; left: 40px; }
         .d-left { top: 40px; left: 0; }
         .d-right { top: 40px; right: 0; }
 
-        /* ACTION BUTTON */
+        /* ACTION BUTTON (MOBILE) */
         .action-btn-container {
-            position: absolute;
-            bottom: 30px;
-            right: 30px;
+            /* Digeser ke kiri (210px) supaya tidak menabrak tombol Travel & Shop */
+            position: absolute; bottom: 30px; right: 210px; 
             pointer-events: auto;
         }
-
         .action-btn {
-            width: 80px;
-            height: 80px;
+            width: 70px; height: 70px;
             background: rgba(255, 50, 50, 0.5);
-            border: 3px solid white;
-            border-radius: 50%;
-            color: white;
-            font-weight: bold;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 14px;
-            text-align: center;
+            border: 3px solid white; border-radius: 50%;
+            color: white; font-weight: bold; display: flex;
+            justify-content: center; align-items: center;
+            font-size: 12px; text-align: center;
             box-shadow: 0 4px 0 #330000;
         }
-        .action-btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 0 0 #330000;
-            background: rgba(255, 50, 50, 0.8);
-        }
+        .action-btn:active { transform: translateY(4px); box-shadow: none; }
 
-        /* Show controls on mobile screens */
-        @media (max-width: 800px) {
-            .mobile-controls { display: block; }
-            #controls-hint { display: none; } /* Hide PC hint on mobile */
-        }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        @media (max-width: 800px) { .mobile-controls { display: block; } #controls-hint { display: none; } }
     </style>
 </head>
 <body>
@@ -254,6 +247,7 @@
 
     <div id="ui-container">
         <h1>🎣 Voxel Fishing</h1>
+        <div class="cp-display">CP: <span id="cp-val">0</span></div>
         <div id="controls-hint">[W,A,S,D] Jalan | [Klik Kanan] Lempar</div>
         <div id="status">Cari spot mancing...</div>
     </div>
@@ -271,11 +265,51 @@
     <!-- UI Minigame Tarik Ikan -->
     <div id="minigame-container">
         <div id="minigame-text">TAP SPASI / KLIK !!!</div>
-        <div id="minigame-target-line"></div>
         <div id="minigame-bar"></div>
     </div>
 
-    <!-- MOBILE CONTROLS OVERLAY -->
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast">Cheat Aktif! +9999 CP</div>
+
+    <!-- TOMBOL TOKO & TRAVEL -->
+    <button id="travel-btn" class="game-btn" onclick="toggleBiome()">KE SALJU</button>
+    <button id="shop-btn" class="game-btn" onclick="openShop()">TOKO</button>
+
+    <!-- SHOP MODAL -->
+    <div id="shop-modal">
+        <div class="shop-header">TOKO ALAT PANCING</div>
+        
+        <!-- Jual -->
+        <div class="shop-item">
+            <div>
+                <strong>Jual Semua Ikan</strong><br>
+                <small>Ubah ikan jadi CP</small>
+            </div>
+            <button class="shop-action-btn" onclick="sellAllFish()">JUAL</button>
+        </div>
+
+        <!-- Upgrade -->
+        <div class="shop-item">
+            <div>
+                <strong>Upgrade Pancing</strong><br>
+                <small id="upgrade-desc">Level 1</small>
+            </div>
+            <button class="shop-action-btn" id="btn-upgrade" onclick="upgradeRod()">BELI (500 CP)</button>
+        </div>
+
+        <!-- Travel Unlock -->
+        <div class="shop-item">
+            <div>
+                <strong>Akses Biome Salju</strong><br>
+                <small>Buka area permanen</small>
+            </div>
+            <button class="shop-action-btn" id="btn-buy-snow" onclick="buySnowAccess()">BELI (1000 CP)</button>
+        </div>
+
+        <button class="close-shop" onclick="closeShop()">TUTUP</button>
+    </div>
+
+    <!-- MOBILE CONTROLS -->
     <div class="mobile-controls" id="mobile-ui">
         <div class="dpad">
             <div class="dpad-btn d-up" id="btn-up">▲</div>
@@ -293,48 +327,59 @@
     <script>
         // --- KONFIGURASI DAN VARIABEL GLOBAL ---
         let scene, camera, renderer;
-        let waterBlocks = [];
+        let waterBlocks = [], terrainBlocks = [];
         let bobber, fishingLine, rodTip;
         let particles = [];
-        let playerGroup; // Grup mesh player
+        let playerGroup;
         
         // Input Movement
         const keysPressed = {};
         const playerSpeed = 0.15;
+        let cheatBuffer = "";
         
-        // State Game: IDLE, CASTING, WAITING, BITING, FIGHTING, REELING
+        // State Game
         let gameState = "IDLE"; 
         let biteTimer = 0;
         
+        // Economy & Stats
+        let playerCP = 0;
+        let rodLevel = 1;
+        let currentBiome = 'plain'; 
+        let snowUnlocked = false; // Status Unlock Biome
+        
         // Minigame Variables
-        let fightProgress = 30; // 0 - 100
-        let fightDecayRate = 0.5; // Seberapa cepat ikan kabur
+        let fightProgress = 30; 
+        let fightDecayRate = 0.5; 
         
-        // Inventaris (Object untuk menyimpan jumlah item)
         const inventory = {};
-        const SAVE_KEY = "voxelFishing_save_v1"; // Kunci penyimpanan
-        
-        // Loot Table dengan ICON
-        const lootTable = [
-            { name: "Ikan Mentah", chance: 50, color: "#e6c385", difficulty: 0.5, icon: "🐟" }, 
-            { name: "Salmon", chance: 30, color: "#ff7575", difficulty: 0.7, icon: "🐠" },
-            { name: "Ikan Buntal", chance: 10, color: "#ffff55", difficulty: 0.9, icon: "🐡" },
-            { name: "Sampah", chance: 8, color: "#444", difficulty: 0.4, icon: "👢" },
-            { name: "Diamond", chance: 2, color: "#00ffff", difficulty: 1.3, icon: "💎" } 
-        ];
+        const SAVE_KEY = "voxelFishing_v3_save";
 
-        let currentTargetLoot = null; // Loot yang sedang ditarik
+        // LOOT TABLES 
+        const lootTables = {
+            'plain': [
+                { name: "Ikan Mas", chance: 50, color: "#e6c385", difficulty: 0.5, icon: "🐟", price: 10 }, 
+                { name: "Salmon", chance: 30, color: "#ff7575", difficulty: 0.7, icon: "🐠", price: 25 },
+                { name: "Sampah", chance: 15, color: "#444", difficulty: 0.3, icon: "👢", price: 1 },
+                { name: "Diamond", chance: 5, color: "#00ffff", difficulty: 1.2, icon: "💎", price: 200 } 
+            ],
+            'snow': [
+                { name: "Ikan Es", chance: 40, color: "#aaffff", difficulty: 0.8, icon: "🧊", price: 50 },
+                { name: "Cumi Raksasa", chance: 30, color: "#ffaaee", difficulty: 1.0, icon: "🦑", price: 80 },
+                { name: "Hiu Putih", chance: 10, color: "#ddd", difficulty: 1.5, icon: "🦈", price: 300 },
+                { name: "Kristal Es", chance: 5, color: "#0000ff", difficulty: 1.2, icon: "💠", price: 500 },
+                { name: "Sampah Beku", chance: 15, color: "#556", difficulty: 0.5, icon: "🔩", price: 5 }
+            ]
+        };
+
+        let currentTargetLoot = null;
 
         // --- INISIALISASI ---
         function init() {
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x87CEEB); 
-            scene.fog = new THREE.Fog(0x87CEEB, 20, 60);
-
+            
             const aspect = window.innerWidth / window.innerHeight;
             const d = 15;
             camera = new THREE.OrthographicCamera(-d * aspect, d * aspect, d, -d, 1, 1000);
-            
             camera.position.set(20, 20, 20); 
             camera.lookAt(0, 0, 0);
 
@@ -346,7 +391,6 @@
 
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
             scene.add(ambientLight);
-
             const dirLight = new THREE.DirectionalLight(0xffffff, 0.7);
             dirLight.position.set(10, 20, 10);
             dirLight.castShadow = true;
@@ -354,21 +398,29 @@
             dirLight.shadow.mapSize.height = 1024;
             scene.add(dirLight);
 
-            createWorld();
+            loadGame();
+
+            createWorld(currentBiome);
             createPlayer();
 
-            // Mobile Detection Logic (Force show if touch device)
             if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
                 document.getElementById('mobile-ui').style.display = 'block';
                 document.getElementById('controls-hint').style.display = 'none';
             }
 
             window.addEventListener('resize', onWindowResize, false);
-            
-            // Mouse & Keyboard Input
             document.addEventListener('contextmenu', event => event.preventDefault()); 
             document.addEventListener('mousedown', handleMouseInput);
             document.addEventListener('keydown', (e) => {
+                // Cheat Listener
+                if (e.key.length === 1) { 
+                    cheatBuffer += e.key.toLowerCase();
+                    if (cheatBuffer.length > 20) cheatBuffer = cheatBuffer.slice(-20);
+                    if (cheatBuffer.endsWith("akuadmin")) {
+                        activateCheat();
+                        cheatBuffer = ""; 
+                    }
+                }
                 keysPressed[e.code] = true;
                 if(e.code === 'Space') handleActionInput(); 
             });
@@ -376,88 +428,205 @@
                 keysPressed[e.code] = false;
             });
 
-            // Touch Controls Setup
             setupTouchControls();
-
             document.getElementById('loading').style.display = 'none';
             
-            // LOAD GAME SAAT MULAI
-            loadGame();
-
+            updateShopUI();
+            updateTravelButtonUI();
             animate();
         }
 
+        // --- SHOP & ECONOMY SYSTEM ---
+
+        function openShop() {
+            document.getElementById('shop-modal').style.display = 'block';
+            updateShopUI();
+        }
+
+        function closeShop() {
+            document.getElementById('shop-modal').style.display = 'none';
+        }
+
+        function updateShopUI() {
+            // Upgrade Logic
+            const cost = rodLevel * 500;
+            document.getElementById('btn-upgrade').innerText = `BELI (${cost} CP)`;
+            document.getElementById('upgrade-desc').innerText = `Level ${rodLevel} -> ${rodLevel+1}`;
+
+            // Unlock Snow Biome Logic
+            const buyBtn = document.getElementById('btn-buy-snow');
+            if (snowUnlocked) {
+                buyBtn.innerText = "SUDAH DIMILIKI";
+                buyBtn.disabled = true;
+            } else {
+                buyBtn.innerText = "BELI (1000 CP)";
+                buyBtn.disabled = false;
+            }
+        }
+
+        function buySnowAccess() {
+            if (snowUnlocked) return;
+            const cost = 1000;
+            if (playerCP >= cost) {
+                playerCP -= cost;
+                snowUnlocked = true;
+                
+                alert("Akses Pulau Salju terbuka permanen!");
+                saveGame();
+                updateCPDisplay();
+                updateShopUI();
+                updateTravelButtonUI();
+            } else {
+                alert("CP tidak cukup!");
+            }
+        }
+
+        function updateTravelButtonUI() {
+            const btn = document.getElementById('travel-btn');
+            if (snowUnlocked) {
+                btn.style.display = 'flex'; // Tampilkan tombol
+                if (currentBiome === 'plain') {
+                    btn.innerText = "KE SALJU";
+                    btn.style.background = "#aaffff";
+                    btn.style.color = "#000";
+                } else {
+                    btn.innerText = "KE DESA";
+                    btn.style.background = "#55aa55";
+                    btn.style.color = "#fff";
+                }
+            } else {
+                btn.style.display = 'none'; // Sembunyikan
+            }
+        }
+
+        function toggleBiome() {
+            // Pindah Biome (Gratis setelah unlock)
+            const targetBiome = (currentBiome === 'plain') ? 'snow' : 'plain';
+            
+            currentBiome = targetBiome;
+            
+            // Hapus world lama
+            waterBlocks.forEach(m => scene.remove(m)); waterBlocks = [];
+            terrainBlocks.forEach(m => scene.remove(m)); terrainBlocks = [];
+            
+            // Re-create world
+            createWorld(currentBiome);
+            
+            // Reset posisi player
+            playerGroup.position.set(0, 1, 8);
+            playerGroup.rotation.y = Math.PI;
+
+            saveGame();
+            updateTravelButtonUI();
+        }
+
+        function activateCheat() {
+            playerCP += 9999;
+            updateCPDisplay();
+            saveGame();
+            
+            const x = document.getElementById("toast");
+            x.innerText = "CHEAT AKTIF: SULTAN MODE! (+9999 CP)";
+            x.style.visibility = "visible";
+            setTimeout(function(){ x.style.visibility = "hidden"; }, 3000);
+            
+            if(playerGroup) createExplosion(playerGroup.position, 0xFFD700);
+        }
+
+        function sellAllFish() {
+            let totalEarned = 0;
+            let soldCount = 0;
+            for (const key in inventory) {
+                const item = inventory[key];
+                if (item.count > 0) {
+                    totalEarned += item.data.price * item.count;
+                    soldCount += item.count;
+                    item.count = 0;
+                }
+            }
+            if (soldCount > 0) {
+                playerCP += totalEarned;
+                alert(`Berhasil menjual ${soldCount} item seharga ${totalEarned} CP!`);
+                saveGame();
+                updateInventoryUI();
+                updateCPDisplay();
+            } else {
+                alert("Tas kamu kosong!");
+            }
+        }
+
+        function upgradeRod() {
+            const cost = rodLevel * 500;
+            if (playerCP >= cost) {
+                playerCP -= cost;
+                rodLevel++;
+                alert(`Pancingan diupgrade ke Level ${rodLevel}!`);
+                saveGame();
+                updateCPDisplay();
+                updateShopUI();
+                
+                if(playerGroup) {
+                     playerGroup.children.forEach(c => {
+                         if(c.geometry.type === 'CylinderGeometry') {
+                             c.material.color.setHex(0xFFD700); 
+                         }
+                     });
+                }
+            } else {
+                alert(`CP tidak cukup! Butuh ${cost} CP.`);
+            }
+        }
+
+        // --- GAMEPLAY INPUT ---
+
         function setupTouchControls() {
-            const btnUp = document.getElementById('btn-up');
-            const btnDown = document.getElementById('btn-down');
-            const btnLeft = document.getElementById('btn-left');
-            const btnRight = document.getElementById('btn-right');
-            const btnAction = document.getElementById('btn-action');
-
-            // Helper for touch events
-            const addTouchHandler = (elem, keyCode) => {
-                elem.addEventListener('touchstart', (e) => { e.preventDefault(); keysPressed[keyCode] = true; });
-                elem.addEventListener('touchend', (e) => { e.preventDefault(); keysPressed[keyCode] = false; });
+            const setupBtn = (id, code) => {
+                const el = document.getElementById(id);
+                el.addEventListener('touchstart', (e)=>{ e.preventDefault(); keysPressed[code]=true; });
+                el.addEventListener('touchend', (e)=>{ e.preventDefault(); keysPressed[code]=false; });
             };
+            setupBtn('btn-up', 'KeyW'); setupBtn('btn-down', 'KeyS');
+            setupBtn('btn-left', 'KeyA'); setupBtn('btn-right', 'KeyD');
 
-            addTouchHandler(btnUp, 'KeyW');
-            addTouchHandler(btnDown, 'KeyS');
-            addTouchHandler(btnLeft, 'KeyA');
-            addTouchHandler(btnRight, 'KeyD');
-
-            // Action Button (Simulates Right Click behavior)
+            const btnAction = document.getElementById('btn-action');
             btnAction.addEventListener('touchstart', (e) => {
                 e.preventDefault();
-                // Jika sedang fighting, tombol ini juga bisa dipakai buat nge-tap
+                // Cegah klik tembus jika modal shop terbuka
+                if(document.getElementById('shop-modal').style.display === 'block') return;
+
                 if (gameState === "FIGHTING") {
                     handleActionInput();
-                    // Efek visual tombol ditekan
                     btnAction.style.transform = "translateY(4px)";
                 } else {
-                    // Logic lempar/tarik
                     performPrimaryAction();
                 }
             });
-
             btnAction.addEventListener('touchend', (e) => {
                 e.preventDefault();
                 btnAction.style.transform = "translateY(0px)";
             });
         }
 
-        // --- INPUT HANDLING ---
-
         function handleMouseInput(e) {
-            // Klik Kanan (Button 2) untuk Melempar/Action Utama
-            if (e.button === 2) { 
-                performPrimaryAction();
-            } 
-            // Klik Kiri (Button 0) untuk Minigame Tap-Tap
-            else if (e.button === 0) {
-                handleActionInput();
-            }
+            // Cegah klik tembus ke tombol shop/travel/modal
+            if (e.target.tagName === 'BUTTON' || e.target.closest('#shop-modal')) return;
+
+            if (e.button === 2) performPrimaryAction();
+            else if (e.button === 0) handleActionInput();
         }
 
-        // Fungsi Utama Aksi (Bisa dari Klik Kanan atau Tombol HP)
         function performPrimaryAction() {
-            if (gameState === "IDLE") {
-                startCasting();
-            } else if (gameState === "WAITING") {
-                resetFishing("Ditarik terlalu cepat!");
-            } else if (gameState === "BITING") {
-                startFighting(); 
-            }
+            if (gameState === "IDLE") startCasting();
+            else if (gameState === "WAITING") resetFishing("Terlalu cepat!");
+            else if (gameState === "BITING") startFighting();
         }
 
         function handleActionInput() {
             if (gameState === "FIGHTING") {
-                // Logic Tap-Tap
-                fightProgress += 10; 
+                let power = 10 + (rodLevel * 2);
+                fightProgress += power; 
                 
-                // Efek visual pancingan bergerak
-                if(playerGroup) {
-                    playerGroup.rotation.z = (Math.random() - 0.5) * 0.3; 
-                }
+                if(playerGroup) playerGroup.rotation.z = (Math.random() - 0.5) * 0.3; 
 
                 if (fightProgress >= 100) {
                     fightProgress = 100;
@@ -466,22 +635,17 @@
             }
         }
 
-        // --- LOGIKA GAMEPLAY ---
+        // --- FISHING LOGIC ---
 
         function startCasting() {
             gameState = "CASTING";
             document.getElementById('status').innerText = "Melempar...";
-            document.getElementById('instruction').innerText = "";
-            
-            // Update Text Button HP
             document.getElementById('btn-action').innerText = "...";
-
             castBobber();
         }
 
         function castBobber() {
             if (bobber) scene.remove(bobber);
-
             const bobberGeo = new THREE.BoxGeometry(0.4, 0.4, 0.4);
             const bobberMat = new THREE.MeshLambertMaterial({ color: 0xFF0000 });
             bobber = new THREE.Mesh(bobberGeo, bobberMat);
@@ -493,12 +657,7 @@
 
             let t = 0;
             const start = tipPos.clone();
-            
-            const target = new THREE.Vector3(
-                (Math.random() - 0.5) * 6, 
-                0, 
-                (Math.random() - 0.5) * 6
-            );
+            const target = new THREE.Vector3((Math.random()-0.5)*6, 0, (Math.random()-0.5)*6);
 
             const animateCast = setInterval(() => {
                 t += 0.05;
@@ -506,7 +665,6 @@
                     clearInterval(animateCast);
                     gameState = "WAITING";
                     document.getElementById('status').innerText = "Menunggu...";
-                    document.getElementById('instruction').innerText = "Tunggu pelampung bergerak...";
                     document.getElementById('btn-action').innerText = "TUNGGU";
                     document.getElementById('btn-action').style.background = "#555";
                     bobber.position.y = 0; 
@@ -514,19 +672,14 @@
                 } else {
                     bobber.position.x = start.x + (target.x - start.x) * t;
                     bobber.position.z = start.z + (target.z - start.z) * t;
-                    const height = 5;
-                    bobber.position.y = start.y + (target.y - start.y) * t + height * (Math.sin(t * Math.PI));
+                    bobber.position.y = start.y + (target.y - start.y) * t + 5 * Math.sin(t * Math.PI);
                 }
             }, 16);
         }
 
         function startFishLogic() {
             const waitTime = Math.random() * 3000 + 1500;
-            setTimeout(() => {
-                if (gameState === "WAITING") {
-                    triggerBite();
-                }
-            }, waitTime);
+            setTimeout(() => { if (gameState === "WAITING") triggerBite(); }, waitTime);
         }
 
         function triggerBite() {
@@ -534,7 +687,6 @@
             document.getElementById('status').innerText = "!!! KLIK / TAP !!!";
             document.getElementById('status').style.color = "red";
             
-            // Update Mobile Button
             const btn = document.getElementById('btn-action');
             btn.innerText = "TARIK!";
             btn.style.background = "red";
@@ -543,10 +695,8 @@
             currentTargetLoot = getLoot();
 
             biteTimer = setTimeout(() => {
-                if (gameState === "BITING") {
-                    resetFishing("Ikan Lepas...");
-                }
-            }, 1500); 
+                if (gameState === "BITING") resetFishing("Ikan Lepas...");
+            }, 1500);
         }
 
         function startFighting() {
@@ -555,7 +705,6 @@
             document.getElementById('status').innerText = "TAP TAP TERUS!";
             document.getElementById('status').style.color = "yellow";
             
-            // Update Mobile Button
             const btn = document.getElementById('btn-action');
             btn.innerText = "TAP!!";
             btn.style.background = "orange";
@@ -563,7 +712,9 @@
             fightProgress = 30; 
             document.getElementById('minigame-container').style.display = 'block';
             
-            fightDecayRate = 0.5 + (currentTargetLoot.difficulty * 0.4);
+            let decayReduction = (rodLevel - 1) * 0.05;
+            fightDecayRate = (0.5 + (currentTargetLoot.difficulty * 0.4)) - decayReduction;
+            if (fightDecayRate < 0.1) fightDecayRate = 0.1;
         }
 
         function updateFightingMinigame() {
@@ -579,12 +730,8 @@
             else if (fightProgress > 70) bar.style.background = "#33ff33";
             else bar.style.background = "#ffff33";
 
-            if (fightProgress >= 100) {
-                winFishing();
-            }
-            else if (fightProgress <= 0) {
-                resetFishing("Tali Putus! Ikan terlalu kuat.");
-            }
+            if (fightProgress >= 100) winFishing();
+            else if (fightProgress <= 0) resetFishing("Tali Putus!");
 
             if(bobber) {
                 bobber.position.x += (Math.random()-0.5) * 0.15;
@@ -595,15 +742,12 @@
 
         function winFishing() {
             if (gameState === "REELING") return;
-            
             gameState = "REELING";
             document.getElementById('minigame-container').style.display = 'none';
             document.getElementById('status').innerText = "Dapat!";
             document.getElementById('status').style.color = "white";
-            document.getElementById('btn-action').style.display = "none"; // Hide button saat animasi
-            
+            document.getElementById('btn-action').style.display = "none";
             if(playerGroup) playerGroup.rotation.z = 0;
-
             reelInAnimation();
         }
 
@@ -633,12 +777,10 @@
                     document.getElementById('status').innerText = `Dapat: ${currentTargetLoot.name}!`;
                     document.getElementById('instruction').innerText = "";
                     
-                    // Reset Button UI
                     const btn = document.getElementById('btn-action');
                     btn.style.display = "flex";
                     btn.innerText = "MANCING";
                     btn.style.background = "rgba(255, 50, 50, 0.5)";
-
                 } else {
                     caughtItem.position.lerp(tipPos, 0.1);
                     caughtItem.rotation.y += 0.3;
@@ -648,26 +790,23 @@
         }
 
         function getLoot() {
+            const table = lootTables[currentBiome] || lootTables['plain'];
             const rand = Math.random() * 100;
             let currentChance = 0;
-            for (let item of lootTable) {
+            for (let item of table) {
                 currentChance += item.chance;
                 if (rand <= currentChance) return item;
             }
-            return lootTable[0];
+            return table[0];
         }
 
         function resetFishing(msg) {
-            if (bobber) {
-                scene.remove(bobber);
-                bobber = null;
-            }
+            if (bobber) { scene.remove(bobber); bobber = null; }
             gameState = "IDLE";
             document.getElementById('minigame-container').style.display = 'none';
             document.getElementById('status').innerText = msg;
             document.getElementById('status').style.color = "white";
             
-            // Reset Button UI
             const btn = document.getElementById('btn-action');
             btn.style.display = "flex";
             btn.innerText = "MANCING";
@@ -676,41 +815,35 @@
             if(playerGroup) playerGroup.rotation.z = 0;
         }
 
+        // --- DATA & SAVE SYSTEM ---
+
         function addToInventory(item) {
-            if (!inventory[item.name]) {
-                inventory[item.name] = { count: 0, data: item };
-            }
+            if (!inventory[item.name]) inventory[item.name] = { count: 0, data: item };
             inventory[item.name].count++;
             
-            // AUTO SAVE SETIAP DAPAT ITEM
             saveGame();
             updateInventoryUI();
             
-            if(item.name === "Diamond") {
+            if(item.name === "Diamond" || item.name === "Kristal Es") {
                 createExplosion(playerGroup.position, 0x00ffff);
             }
         }
 
-        // --- SAVE SYSTEM ---
+        function updateCPDisplay() {
+            document.getElementById('cp-val').innerText = playerCP;
+        }
+
         function saveGame() {
             try {
-                localStorage.setItem(SAVE_KEY, JSON.stringify(inventory));
-                
-                // Efek visual 'Menyimpan...' di judul inventory
-                const title = document.querySelector('.inv-title');
-                if(title.innerText !== "MENYIMPAN...") {
-                    const originalText = "TAS PANCING";
-                    title.innerText = "MENYIMPAN...";
-                    title.style.color = "#55ff55"; // Hijau
-                    
-                    setTimeout(() => {
-                        title.innerText = originalText;
-                        title.style.color = "#FFFF55"; // Kembali Kuning
-                    }, 800);
-                }
-            } catch (e) {
-                console.error("Gagal menyimpan:", e);
-            }
+                const saveObj = {
+                    inv: inventory,
+                    cp: playerCP,
+                    rod: rodLevel,
+                    biome: currentBiome,
+                    snowUnlocked: snowUnlocked // Save status unlock
+                };
+                localStorage.setItem(SAVE_KEY, JSON.stringify(saveObj));
+            } catch (e) { console.error("Save failed", e); }
         }
 
         function loadGame() {
@@ -718,20 +851,22 @@
                 const data = localStorage.getItem(SAVE_KEY);
                 if (data) {
                     const parsed = JSON.parse(data);
-                    // Isi inventory dengan data yang disimpan
-                    Object.assign(inventory, parsed);
+                    if(parsed.inv) Object.assign(inventory, parsed.inv);
+                    if(parsed.cp) playerCP = parsed.cp;
+                    if(parsed.rod) rodLevel = parsed.rod;
+                    if(parsed.biome) currentBiome = parsed.biome;
+                    if(parsed.snowUnlocked) snowUnlocked = parsed.snowUnlocked;
+                    
                     updateInventoryUI();
-                    console.log("Game berhasil dimuat!");
+                    updateCPDisplay();
+                    updateTravelButtonUI();
                 }
-            } catch (e) {
-                console.error("Gagal memuat save:", e);
-            }
+            } catch (e) { console.error("Load failed", e); }
         }
 
         function updateInventoryUI() {
             const list = document.getElementById('inv-list');
             list.innerHTML = "";
-            
             let hasItem = false;
             for (const [key, value] of Object.entries(inventory)) {
                 if (value.count > 0) {
@@ -744,27 +879,41 @@
                         </div>`;
                 }
             }
-            
-            if (!hasItem) {
-                list.innerHTML = `<div style="text-align:center; color:#aaa; font-size:12px;">(Kosong)</div>`;
-            }
+            if (!hasItem) list.innerHTML = `<div style="text-align:center; color:#aaa; font-size:12px;">(Kosong)</div>`;
         }
 
-        // --- CREATION FUNCTIONS ---
+        // --- WORLD GENERATION ---
 
-        function createWorld() {
+        function createWorld(type) {
             const blockSize = 2;
             const mapSize = 16; 
             
+            let colorGrass, colorDirt, colorWater, colorBg;
+            
+            if (type === 'snow') {
+                colorGrass = 0xffffff; 
+                colorDirt = 0x88ccff;  
+                colorWater = 0x88eeff; 
+                colorBg = 0x111133;    
+                scene.background = new THREE.Color(colorBg);
+                scene.fog = new THREE.Fog(colorBg, 15, 50);
+            } else {
+                colorGrass = 0x55aa55; 
+                colorDirt = 0x885533;  
+                colorWater = 0x4444ff; 
+                colorBg = 0x87CEEB;    
+                scene.background = new THREE.Color(colorBg);
+                scene.fog = new THREE.Fog(colorBg, 20, 60);
+            }
+
             const geometryBox = new THREE.BoxGeometry(blockSize, blockSize, blockSize);
-            const grassMat = new THREE.MeshLambertMaterial({ color: 0x55aa55 }); 
-            const dirtMat = new THREE.MeshLambertMaterial({ color: 0x885533 });  
-            const waterMat = new THREE.MeshLambertMaterial({ color: 0x4444ff, transparent: true, opacity: 0.8 }); 
+            const grassMat = new THREE.MeshLambertMaterial({ color: colorGrass }); 
+            const dirtMat = new THREE.MeshLambertMaterial({ color: colorDirt });  
+            const waterMat = new THREE.MeshLambertMaterial({ color: colorWater, transparent: true, opacity: 0.8 }); 
 
             for (let x = -mapSize/2; x < mapSize/2; x++) {
                 for (let z = -mapSize/2; z < mapSize/2; z++) {
-                    let isWater = false;
-                    if (Math.abs(x) < 3 && Math.abs(z) < 3) isWater = true;
+                    let isWater = (Math.abs(x) < 4 && Math.abs(z) < 4);
 
                     if (isWater) {
                         const water = new THREE.Mesh(geometryBox, waterMat);
@@ -776,112 +925,95 @@
                         const sand = new THREE.Mesh(geometryBox, dirtMat);
                         sand.position.set(x * blockSize, -1 - blockSize, z * blockSize);
                         scene.add(sand);
+                        terrainBlocks.push(sand);
                     } else {
                         const grass = new THREE.Mesh(geometryBox, grassMat);
                         grass.position.set(x * blockSize, 0, z * blockSize);
                         grass.castShadow = true;
                         grass.receiveShadow = true;
                         scene.add(grass);
+                        terrainBlocks.push(grass);
 
                         const dirt = new THREE.Mesh(geometryBox, dirtMat);
                         dirt.position.set(x * blockSize, -blockSize, z * blockSize);
                         scene.add(dirt);
+                        terrainBlocks.push(dirt);
                     }
                 }
             }
-            createTree(-10, -10);
-            createTree(10, -8);
-            createTree(-8, 10);
-            createTree(12, 12);
+            
+            if (type === 'snow') {
+                createTree(-10, -10, 0x555555, 0xffffff);
+                createTree(10, -8, 0x555555, 0xffffff);
+            } else {
+                createTree(-10, -10, 0x8B4513, 0x338833);
+                createTree(10, -8, 0x8B4513, 0x338833);
+            }
         }
 
-        function createTree(x, z) {
+        function createTree(x, z, trunkColor, leafColor) {
             const trunkGeo = new THREE.BoxGeometry(1, 6, 1);
-            const trunkMat = new THREE.MeshLambertMaterial({ color: 0x8B4513 });
+            const trunkMat = new THREE.MeshLambertMaterial({ color: trunkColor });
             const trunk = new THREE.Mesh(trunkGeo, trunkMat);
             trunk.position.set(x, 3, z);
             trunk.castShadow = true;
             scene.add(trunk);
+            terrainBlocks.push(trunk);
 
             const leafGeo = new THREE.BoxGeometry(5, 5, 5);
-            const leafMat = new THREE.MeshLambertMaterial({ color: 0x338833 });
+            const leafMat = new THREE.MeshLambertMaterial({ color: leafColor });
             const leaf = new THREE.Mesh(leafGeo, leafMat);
             leaf.position.set(x, 7, z);
             leaf.castShadow = true;
             scene.add(leaf);
+            terrainBlocks.push(leaf);
         }
 
         function createPlayer() {
+            if(playerGroup) scene.remove(playerGroup); 
+
             playerGroup = new THREE.Group();
-            
-            const bodyGeo = new THREE.BoxGeometry(1.5, 3, 1);
             const bodyMat = new THREE.MeshLambertMaterial({ color: 0x0000AA }); 
-            const body = new THREE.Mesh(bodyGeo, bodyMat);
-            body.position.y = 1.5;
-            playerGroup.add(body);
+            const body = new THREE.Mesh(new THREE.BoxGeometry(1.5, 3, 1), bodyMat);
+            body.position.y = 1.5; playerGroup.add(body);
 
-            const headGeo = new THREE.BoxGeometry(1, 1, 1);
-            const headMat = new THREE.MeshLambertMaterial({ color: 0xffccaa }); 
-            const head = new THREE.Mesh(headGeo, headMat);
-            head.position.y = 3.5;
-            playerGroup.add(head);
+            const head = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshLambertMaterial({ color: 0xffccaa }));
+            head.position.y = 3.5; playerGroup.add(head);
 
-            const armGeo = new THREE.BoxGeometry(0.5, 2, 0.5);
-            const arm = new THREE.Mesh(armGeo, bodyMat);
-            arm.position.set(1, 2, 0.5);
-            arm.rotation.x = -Math.PI / 4; 
-            playerGroup.add(arm);
+            const arm = new THREE.Mesh(new THREE.BoxGeometry(0.5, 2, 0.5), bodyMat);
+            arm.position.set(1, 2, 0.5); arm.rotation.x = -Math.PI / 4; playerGroup.add(arm);
 
-            const rodGeo = new THREE.CylinderGeometry(0.05, 0.1, 6, 8);
-            const rodMat = new THREE.MeshLambertMaterial({ color: 0x5c4033 });
-            const rod = new THREE.Mesh(rodGeo, rodMat);
-            rod.rotation.x = Math.PI / 2; 
-            rod.rotation.z = -Math.PI / 8; 
-            rod.position.set(1, 4, 2);
-            playerGroup.add(rod);
+            const rodColor = rodLevel > 1 ? 0xFFD700 : 0x5c4033;
+            const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.1, 6, 8), new THREE.MeshLambertMaterial({ color: rodColor }));
+            rod.rotation.x = Math.PI / 2; rod.rotation.z = -Math.PI / 8; 
+            rod.position.set(1, 4, 2); playerGroup.add(rod);
 
-            rodTip = new THREE.Object3D();
-            rodTip.position.set(0, 3, 0); 
-            rod.add(rodTip);
-
-            playerGroup.position.set(0, 1, 8); 
-            playerGroup.rotation.y = Math.PI; 
+            rodTip = new THREE.Object3D(); rodTip.position.set(0, 3, 0); rod.add(rodTip);
+            
+            playerGroup.position.set(0, 1, 8); playerGroup.rotation.y = Math.PI;
             scene.add(playerGroup);
 
-            const lineMat = new THREE.LineBasicMaterial({ color: 0x000000 });
             const lineGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,0)]);
-            fishingLine = new THREE.Line(lineGeo, lineMat);
+            fishingLine = new THREE.Line(lineGeo, new THREE.LineBasicMaterial({ color: 0x000000 }));
             scene.add(fishingLine);
         }
 
+        // --- EFFECTS ---
+
         function createSplash(pos) {
             for(let i=0; i<8; i++) {
-                const size = Math.random() * 0.2 + 0.1;
-                const geo = new THREE.BoxGeometry(size, size, size);
-                const mat = new THREE.MeshBasicMaterial({ color: 0xeeeeff });
-                const part = new THREE.Mesh(geo, mat);
-                part.position.copy(pos);
-                part.position.y = 0;
-                part.userData = {
-                    vel: new THREE.Vector3((Math.random()-0.5)*0.2, Math.random()*0.3, (Math.random()-0.5)*0.2)
-                };
-                scene.add(part);
-                particles.push(part);
+                const p = new THREE.Mesh(new THREE.BoxGeometry(0.2,0.2,0.2), new THREE.MeshBasicMaterial({color:0xeeeeff}));
+                p.position.copy(pos); p.position.y=0;
+                p.userData={vel:new THREE.Vector3((Math.random()-0.5)*0.2, Math.random()*0.3, (Math.random()-0.5)*0.2)};
+                scene.add(p); particles.push(p);
             }
         }
-
         function createExplosion(pos, color) {
             for(let i=0; i<20; i++) {
-                const size = Math.random() * 0.3 + 0.2;
-                const geo = new THREE.BoxGeometry(size, size, size);
-                const mat = new THREE.MeshBasicMaterial({ color: color });
-                const part = new THREE.Mesh(geo, mat);
-                part.position.copy(pos);
-                part.userData = {
-                    vel: new THREE.Vector3((Math.random()-0.5)*0.5, Math.random()*0.5, (Math.random()-0.5)*0.5)
-                };
-                scene.add(part);
-                particles.push(part);
+                const p = new THREE.Mesh(new THREE.BoxGeometry(0.3,0.3,0.3), new THREE.MeshBasicMaterial({color:color}));
+                p.position.copy(pos);
+                p.userData={vel:new THREE.Vector3((Math.random()-0.5)*0.5, Math.random()*0.5, (Math.random()-0.5)*0.5)};
+                scene.add(p); particles.push(p);
             }
         }
 
@@ -889,80 +1021,48 @@
             requestAnimationFrame(animate);
             const time = Date.now() * 0.001;
 
-            // --- MOVEMENT LOGIC ---
             if (playerGroup && gameState === "IDLE") { 
                 const oldPos = playerGroup.position.clone();
-                let moved = false;
-                
-                if (keysPressed['KeyW']) { playerGroup.position.z -= playerSpeed; playerGroup.rotation.y = Math.PI; moved = true; }
-                if (keysPressed['KeyS']) { playerGroup.position.z += playerSpeed; playerGroup.rotation.y = 0; moved = true; }
-                if (keysPressed['KeyA']) { playerGroup.position.x -= playerSpeed; playerGroup.rotation.y = -Math.PI/2; moved = true; }
-                if (keysPressed['KeyD']) { playerGroup.position.x += playerSpeed; playerGroup.rotation.y = Math.PI/2; moved = true; }
-                
+                if (keysPressed['KeyW']) { playerGroup.position.z -= playerSpeed; playerGroup.rotation.y = Math.PI; }
+                if (keysPressed['KeyS']) { playerGroup.position.z += playerSpeed; playerGroup.rotation.y = 0; }
+                if (keysPressed['KeyA']) { playerGroup.position.x -= playerSpeed; playerGroup.rotation.y = -Math.PI/2; }
+                if (keysPressed['KeyD']) { playerGroup.position.x += playerSpeed; playerGroup.rotation.y = Math.PI/2; }
+
                 if (keysPressed['KeyW'] && keysPressed['KeyA']) playerGroup.rotation.y = -Math.PI * 0.75;
                 if (keysPressed['KeyW'] && keysPressed['KeyD']) playerGroup.rotation.y = Math.PI * 0.75;
                 if (keysPressed['KeyS'] && keysPressed['KeyA']) playerGroup.rotation.y = -Math.PI * 0.25;
                 if (keysPressed['KeyS'] && keysPressed['KeyD']) playerGroup.rotation.y = Math.PI * 0.25;
 
-                const absX = Math.abs(playerGroup.position.x);
-                const absZ = Math.abs(playerGroup.position.z);
+                const centerLimit = 7.5; 
+                const outerLimit = 14.5;
 
-                if ((absX < 5 && absZ < 5)) {
-                   playerGroup.position.copy(oldPos);
+                if (Math.abs(playerGroup.position.x) < centerLimit && Math.abs(playerGroup.position.z) < centerLimit) {
+                    playerGroup.position.copy(oldPos); 
                 }
-                if (absX > 14 || absZ > 14) {
-                    playerGroup.position.copy(oldPos);
+                if (Math.abs(playerGroup.position.x) > outerLimit || Math.abs(playerGroup.position.z) > outerLimit) {
+                    playerGroup.position.copy(oldPos); 
                 }
 
-                const targetCamX = playerGroup.position.x + 20;
-                const targetCamZ = playerGroup.position.z + 20;
-                camera.position.x += (targetCamX - camera.position.x) * 0.1;
-                camera.position.z += (targetCamZ - camera.position.z) * 0.1;
+                camera.position.x += (playerGroup.position.x + 20 - camera.position.x) * 0.1;
+                camera.position.z += (playerGroup.position.z + 20 - camera.position.z) * 0.1;
             }
 
-            // Minigame Update
-            if (gameState === "FIGHTING") {
-                updateFightingMinigame();
-            }
+            if (gameState === "FIGHTING") updateFightingMinigame();
 
-            // Water Animation
-            waterBlocks.forEach((block, idx) => {
-                block.position.y = block.userData.originalY + Math.sin(time * 2 + idx) * 0.05;
-            });
+            waterBlocks.forEach((block, idx) => block.position.y = block.userData.originalY + Math.sin(time * 2 + idx) * 0.05);
 
-            // Bobber Animation
-            if (gameState === "WAITING" && bobber) {
-                bobber.position.y = Math.sin(time * 5) * 0.1 - 0.2;
-                if (gameState === "BITING") {
-                    bobber.position.y = -0.5 + Math.sin(time * 20) * 0.2; 
-                }
-            }
-
-            // Fishing Line Update
             if (fishingLine && rodTip && playerGroup) {
-                const tipPos = new THREE.Vector3();
-                rodTip.getWorldPosition(tipPos);
-                const positions = fishingLine.geometry.attributes.position.array;
-                positions[0] = tipPos.x; positions[1] = tipPos.y; positions[2] = tipPos.z;
-
-                if (bobber) {
-                    positions[3] = bobber.position.x; positions[4] = bobber.position.y; positions[5] = bobber.position.z;
-                } else {
-                    positions[3] = tipPos.x; positions[4] = tipPos.y; positions[5] = tipPos.z;
-                }
+                const tipPos = new THREE.Vector3(); rodTip.getWorldPosition(tipPos);
+                const pos = fishingLine.geometry.attributes.position.array;
+                pos[0]=tipPos.x; pos[1]=tipPos.y; pos[2]=tipPos.z;
+                if (bobber) { pos[3]=bobber.position.x; pos[4]=bobber.position.y; pos[5]=bobber.position.z; }
+                else { pos[3]=tipPos.x; pos[4]=tipPos.y; pos[5]=tipPos.z; }
                 fishingLine.geometry.attributes.position.needsUpdate = true;
             }
 
-            // Particles Update
             for (let i = particles.length - 1; i >= 0; i--) {
-                const p = particles[i];
-                p.position.add(p.userData.vel);
-                p.userData.vel.y -= 0.01; 
-                p.rotation.x += 0.1;
-                if (p.position.y < -2) {
-                    scene.remove(p);
-                    particles.splice(i, 1);
-                }
+                const p = particles[i]; p.position.add(p.userData.vel); p.userData.vel.y -= 0.01; p.rotation.x+=0.1;
+                if (p.position.y < -2) { scene.remove(p); particles.splice(i, 1); }
             }
 
             renderer.render(scene, camera);
@@ -971,10 +1071,8 @@
         function onWindowResize() {
             const aspect = window.innerWidth / window.innerHeight;
             const d = 15;
-            camera.left = -d * aspect;
-            camera.right = d * aspect;
-            camera.top = d;
-            camera.bottom = -d;
+            camera.left = -d * aspect; camera.right = d * aspect;
+            camera.top = d; camera.bottom = -d;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
