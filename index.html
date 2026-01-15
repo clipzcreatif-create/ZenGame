@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fishkan - Voxel Fishing</title>
+    <title>Fishkan! - Voxel Fishing</title>
     <style>
         body {
             margin: 0;
@@ -18,7 +18,7 @@
         /* --- UI UTAMA --- */
         #ui-container {
             position: absolute;
-            top: 20px;
+            top: 10px;
             left: 20px;
             color: white;
             text-shadow: 2px 2px 0 #000;
@@ -27,8 +27,12 @@
         }
 
         h1 { margin: 0; font-size: 24px; color: #FFFF55; }
-        #status { font-size: 18px; margin-top: 10px; font-weight: bold; }
+        #status { font-size: 18px; margin-top: 5px; font-weight: bold; }
         #controls-hint { font-size: 14px; color: #ddd; margin-top: 5px; }
+        #rod-badge {
+            font-size: 14px; color: #aaffaa; margin-top: 2px;
+            text-shadow: 1px 1px 0 #000;
+        }
 
         /* CURRENCY DISPLAY */
         .cp-display {
@@ -46,7 +50,7 @@
         /* INVENTORY */
         #inventory {
             position: absolute;
-            top: 20px;
+            top: 10px;
             right: 20px;
             background: rgba(0, 0, 0, 0.7);
             padding: 10px;
@@ -201,104 +205,117 @@
             font-size: 24px;
         }
 
-        /* --- MOBILE CONTROLS & LAYOUT ADJUSTMENT --- */
+        /* --- MOBILE CONTROLS --- */
         .mobile-controls {
             display: none; position: absolute; bottom: 20px;
-            width: 100%; height: 150px; pointer-events: none; z-index: 50;
+            width: 100%; height: 100%; pointer-events: none; z-index: 50;
         }
+        
         .dpad {
-            position: absolute; bottom: 20px; left: 20px;
-            width: 140px; height: 140px; pointer-events: auto; /* Sedikit diperbesar */
+            position: absolute; bottom: 30px; left: 30px;
+            width: 160px; height: 160px; pointer-events: auto;
         }
+        
         .dpad-btn {
-            position: absolute; background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.4);
-            border-radius: 12px; width: 45px; height: 45px;
+            position: absolute; background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 12px; width: 50px; height: 50px;
             display: flex; justify-content: center; align-items: center;
             font-size: 24px; color: white;
-            backdrop-filter: blur(2px);
+            backdrop-filter: blur(4px);
         }
-        .dpad-btn:active { background: rgba(255, 255, 255, 0.5); }
+        .dpad-btn:active { background: rgba(255, 255, 255, 0.4); }
 
-        .d-up { top: 0; left: 47.5px; }
-        .d-down { bottom: 0; left: 47.5px; }
-        .d-left { top: 47.5px; left: 0; }
-        .d-right { top: 47.5px; right: 0; }
+        .d-up { top: 0; left: 55px; }
+        .d-down { bottom: 0; left: 55px; }
+        .d-left { top: 55px; left: 0; }
+        .d-right { top: 55px; right: 0; }
 
-        /* ACTION BUTTON (MOBILE) */
         .action-btn-container {
-            /* Posisi default (desktop) - tidak dipakai karena display none, 
-               tapi kita set untuk mobile via media query */
             pointer-events: auto;
+            position: absolute; bottom: 40px; right: 40px; /* Pojok kanan bawah nyaman */
         }
+        
         .action-btn {
-            width: 80px; height: 80px;
-            background: rgba(255, 50, 50, 0.6);
+            width: 90px; height: 90px;
+            background: rgba(255, 50, 50, 0.7);
             border: 4px solid white; border-radius: 50%;
             color: white; font-weight: bold; display: flex;
             justify-content: center; align-items: center;
             font-size: 14px; text-align: center;
             box-shadow: 0 4px 0 #330000;
-            backdrop-filter: blur(2px);
+            backdrop-filter: blur(4px);
         }
-        .action-btn:active { transform: translateY(4px); box-shadow: none; }
+        .action-btn:active { transform: translateY(4px); box-shadow: none; background: rgba(255, 50, 50, 0.9); }
+
+        /* --- ROTATE DEVICE OVERLAY --- */
+        #rotate-overlay {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #222; color: #FFFF55;
+            z-index: 9999;
+            flex-direction: column;
+            justify-content: center; align-items: center;
+            text-align: center;
+            font-size: 20px;
+            padding: 20px;
+        }
+        #rotate-icon { font-size: 50px; margin-bottom: 20px; animation: rotateAnim 2s infinite; }
+        @keyframes rotateAnim {
+            0% { transform: rotate(0deg); }
+            50% { transform: rotate(90deg); }
+            100% { transform: rotate(0deg); }
+        }
 
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        /* --- MEDIA QUERY KHUSUS HP --- */
-        @media (max-width: 800px) {
+        /* --- MEDIA QUERY KHUSUS MOBILE LANDSCAPE --- */
+        @media (max-width: 900px) and (orientation: landscape) {
             .mobile-controls { display: block; }
             #controls-hint { display: none; }
-
-            /* Pindahkan Tombol Menu (Toko/Travel) ke Kiri Atas (Bawah status CP) 
-               agar tidak menabrak jempol kanan */
+            
+            /* Penyesuaian Tombol Game (Toko/Travel) agar tidak menabrak kontrol */
             .game-btn {
-                bottom: auto; 
-                top: 100px; /* Di bawah status */
-                width: 60px; height: 60px; /* Lebih kecil */
-                font-size: 12px;
-                background-color: rgba(0,0,0,0.5); /* Semi transparan biar ga ganggu */
+                width: 50px; height: 50px;
+                font-size: 10px;
+                bottom: auto; top: 10px; /* Pindah ke atas */
             }
-            #shop-btn {
-                right: auto;
-                left: 20px;
-            }
-            #travel-btn {
-                right: auto;
-                left: 90px;
-            }
+            #shop-btn { right: 170px; } /* Geser agar tidak ketutup inventory */
+            #travel-btn { right: 230px; }
 
-            /* Tombol Aksi Mancing Murni di Kanan Bawah */
-            .action-btn-container {
-                position: absolute;
-                bottom: 30px; 
-                right: 30px;
-            }
-
-            /* Inventory diperkecil sedikit */
+            /* Inventory lebih ringkas */
             #inventory {
-                top: 10px;
-                right: 10px;
-                min-width: 140px;
-                font-size: 12px;
-                padding: 5px;
+                max-height: 150px;
+                min-width: 130px;
+                font-size: 11px;
             }
-            .item-icon { font-size: 16px; }
-
-            /* Geser Minigame bar ke atas dikit biar ga ketutup jari */
-            #minigame-container {
-                bottom: 200px;
-            }
+            
+            /* Minigame agak ke atas */
+            #minigame-container { bottom: 20px; width: 40%; left: 30%; transform: none; }
+            #instruction { bottom: 80px; font-size: 16px; }
         }
+
+        /* --- MEDIA QUERY KHUSUS MOBILE PORTRAIT (FORCE ROTATE) --- */
+        @media (max-width: 900px) and (orientation: portrait) {
+            #rotate-overlay { display: flex; }
+        }
+
     </style>
 </head>
 <body>
 
+    <!-- OVERLAY ROTATE DEVICE -->
+    <div id="rotate-overlay">
+        <div id="rotate-icon">📱 ➡️ 🔄</div>
+        <div>Mohon putar HP ke posisi Landscape<br>untuk pengalaman terbaik!</div>
+    </div>
+
     <div id="loading">Memuat Dunia Kotak...</div>
 
     <div id="ui-container">
-        <h1>🎣 Fishkan</h1>
+        <h1>🎣 Fishkan!</h1>
         <div class="cp-display">CP: <span id="cp-val">0</span></div>
+        <div id="rod-badge">Level 1: Kayu</div>
         <div id="controls-hint">[W,A,S,D] Jalan | [Klik Kanan] Lempar</div>
         <div id="status">Cari spot mancing...</div>
     </div>
@@ -320,7 +337,7 @@
     </div>
 
     <!-- TOAST NOTIFICATION -->
-    <div id="toast">Cheat Aktif! +9999 CP</div>
+    <div id="toast">Cheat Aktif! +999999 CP</div>
 
     <!-- TOMBOL TOKO & TRAVEL -->
     <button id="travel-btn" class="game-btn" onclick="toggleBiome()">KE SALJU</button>
@@ -360,14 +377,17 @@
         <button class="close-shop" onclick="closeShop()">TUTUP</button>
     </div>
 
-    <!-- MOBILE CONTROLS -->
+    <!-- MOBILE CONTROLS (Landscape Optimized) -->
     <div class="mobile-controls" id="mobile-ui">
+        <!-- D-Pad Kiri Bawah -->
         <div class="dpad">
             <div class="dpad-btn d-up" id="btn-up">▲</div>
             <div class="dpad-btn d-down" id="btn-down">▼</div>
             <div class="dpad-btn d-left" id="btn-left">◀</div>
             <div class="dpad-btn d-right" id="btn-right">▶</div>
         </div>
+        
+        <!-- Action Button Kanan Bawah -->
         <div class="action-btn-container">
             <div class="action-btn" id="btn-action">MANCING</div>
         </div>
@@ -380,9 +400,13 @@
         let scene, camera, renderer;
         let waterBlocks = [], terrainBlocks = [];
         let bobber, fishingLine, rodTip;
-        let particles = [];
-        let playerGroup;
+        let particles = [], rodParticles = [];
+        let playerGroup, rightArmGroup; 
         
+        // Animasi Tangan
+        let armAngle = -Math.PI / 4; 
+        let armTargetAngle = -Math.PI / 4; 
+
         // Input Movement
         const keysPressed = {};
         const playerSpeed = 0.15;
@@ -395,15 +419,16 @@
         // Economy & Stats
         let playerCP = 0;
         let rodLevel = 1;
+        const MAX_ROD_LEVEL = 67; 
         let currentBiome = 'plain'; 
-        let snowUnlocked = false; // Status Unlock Biome
+        let snowUnlocked = false; 
         
         // Minigame Variables
         let fightProgress = 30; 
         let fightDecayRate = 0.5; 
         
         const inventory = {};
-        const SAVE_KEY = "voxelFishing_v3_save";
+        const SAVE_KEY = "voxelFishing_v4_save";
 
         // LOOT TABLES 
         const lootTables = {
@@ -428,17 +453,15 @@
         function init() {
             scene = new THREE.Scene();
             
-            const aspect = window.innerWidth / window.innerHeight;
-            const d = 15;
-            camera = new THREE.OrthographicCamera(-d * aspect, d * aspect, d, -d, 1, 1000);
-            camera.position.set(20, 20, 20); 
-            camera.lookAt(0, 0, 0);
-
+            // Render setup
             renderer = new THREE.WebGLRenderer({ antialias: false }); 
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             document.body.appendChild(renderer.domElement);
+
+            // Camera Setup
+            setupCamera();
 
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
             scene.add(ambientLight);
@@ -453,7 +476,9 @@
 
             createWorld(currentBiome);
             createPlayer();
+            updateRodBadge();
 
+            // Mobile Detection
             if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
                 document.getElementById('mobile-ui').style.display = 'block';
                 document.getElementById('controls-hint').style.display = 'none';
@@ -487,6 +512,14 @@
             animate();
         }
 
+        function setupCamera() {
+            const aspect = window.innerWidth / window.innerHeight;
+            const d = 15;
+            camera = new THREE.OrthographicCamera(-d * aspect, d * aspect, d, -d, 1, 1000);
+            camera.position.set(20, 20, 20); 
+            camera.lookAt(0, 0, 0);
+        }
+
         // --- SHOP & ECONOMY SYSTEM ---
 
         function openShop() {
@@ -499,12 +532,21 @@
         }
 
         function updateShopUI() {
-            // Upgrade Logic
-            const cost = rodLevel * 500;
-            document.getElementById('btn-upgrade').innerText = `BELI (${cost} CP)`;
-            document.getElementById('upgrade-desc').innerText = `Level ${rodLevel} -> ${rodLevel+1}`;
+            const btnUpgrade = document.getElementById('btn-upgrade');
+            const desc = document.getElementById('upgrade-desc');
 
-            // Unlock Snow Biome Logic
+            if (rodLevel >= MAX_ROD_LEVEL) {
+                btnUpgrade.innerText = "MAX LEVEL";
+                btnUpgrade.disabled = true;
+                desc.innerText = `Level ${rodLevel} (Legendaris)`;
+            } else {
+                // HARGA DISKON: Level * 25 (Sebelumnya 500)
+                const cost = rodLevel * 25;
+                btnUpgrade.innerText = `BELI (${cost} CP)`;
+                btnUpgrade.disabled = false;
+                desc.innerText = `Level ${rodLevel} -> ${rodLevel+1}`;
+            }
+
             const buyBtn = document.getElementById('btn-buy-snow');
             if (snowUnlocked) {
                 buyBtn.innerText = "SUDAH DIMILIKI";
@@ -521,7 +563,6 @@
             if (playerCP >= cost) {
                 playerCP -= cost;
                 snowUnlocked = true;
-                
                 alert("Akses Pulau Salju terbuka permanen!");
                 saveGame();
                 updateCPDisplay();
@@ -535,7 +576,7 @@
         function updateTravelButtonUI() {
             const btn = document.getElementById('travel-btn');
             if (snowUnlocked) {
-                btn.style.display = 'flex'; // Tampilkan tombol
+                btn.style.display = 'flex'; 
                 if (currentBiome === 'plain') {
                     btn.innerText = "KE SALJU";
                     btn.style.background = "#aaffff";
@@ -546,41 +587,30 @@
                     btn.style.color = "#fff";
                 }
             } else {
-                btn.style.display = 'none'; // Sembunyikan
+                btn.style.display = 'none'; 
             }
         }
 
         function toggleBiome() {
-            // Pindah Biome (Gratis setelah unlock)
             const targetBiome = (currentBiome === 'plain') ? 'snow' : 'plain';
-            
             currentBiome = targetBiome;
-            
-            // Hapus world lama
             waterBlocks.forEach(m => scene.remove(m)); waterBlocks = [];
             terrainBlocks.forEach(m => scene.remove(m)); terrainBlocks = [];
-            
-            // Re-create world
             createWorld(currentBiome);
-            
-            // Reset posisi player
             playerGroup.position.set(0, 1, 8);
             playerGroup.rotation.y = Math.PI;
-
             saveGame();
             updateTravelButtonUI();
         }
 
         function activateCheat() {
-            playerCP += 9999;
+            playerCP += 999999;
             updateCPDisplay();
             saveGame();
-            
             const x = document.getElementById("toast");
-            x.innerText = "CHEAT AKTIF: SULTAN MODE! (+9999 CP)";
+            x.innerText = "CHEAT AKTIF: SULTAN MODE! (+999999 CP)";
             x.style.visibility = "visible";
             setTimeout(function(){ x.style.visibility = "hidden"; }, 3000);
-            
             if(playerGroup) createExplosion(playerGroup.position, 0xFFD700);
         }
 
@@ -607,25 +637,48 @@
         }
 
         function upgradeRod() {
-            const cost = rodLevel * 500;
+            if (rodLevel >= MAX_ROD_LEVEL) return;
+            
+            // HARGA DISKON: Level * 25 (Sebelumnya 500)
+            const cost = rodLevel * 25;
+            
             if (playerCP >= cost) {
                 playerCP -= cost;
                 rodLevel++;
-                alert(`Pancingan diupgrade ke Level ${rodLevel}!`);
+                // Hapus alert biar spam klik lebih cepat enak
+                // alert(`Pancingan diupgrade ke Level ${rodLevel}!`); 
                 saveGame();
                 updateCPDisplay();
                 updateShopUI();
-                
-                if(playerGroup) {
-                     playerGroup.children.forEach(c => {
-                         if(c.geometry.type === 'CylinderGeometry') {
-                             c.material.color.setHex(0xFFD700); 
-                         }
-                     });
-                }
+                updateRodBadge();
+                if(playerGroup) { createPlayer(); }
             } else {
                 alert(`CP tidak cukup! Butuh ${cost} CP.`);
             }
+        }
+
+        function getRodColor(level) {
+            if (level >= 60) return 0xFFFFFF; 
+            if (level >= 50) return 0x50C878; 
+            if (level >= 40) return 0x00FFFF; 
+            if (level >= 30) return 0xFFD700; 
+            if (level >= 20) return 0xE0E0E0; 
+            if (level >= 10) return 0x888888; 
+            return 0x5c4033; 
+        }
+        
+        function updateRodBadge() {
+            const el = document.getElementById('rod-badge');
+            let tierName = "Kayu";
+            let color = "#aaffaa";
+            if (rodLevel >= 60) { tierName = "DEWA (AWAN)"; color = "#fff"; }
+            else if (rodLevel >= 50) { tierName = "ZAMRUD"; color = "#50C878"; }
+            else if (rodLevel >= 40) { tierName = "BERLIAN"; color = "#00FFFF"; }
+            else if (rodLevel >= 30) { tierName = "EMAS"; color = "#FFD700"; }
+            else if (rodLevel >= 20) { tierName = "PERAK"; color = "#E0E0E0"; }
+            else if (rodLevel >= 10) { tierName = "BESI"; color = "#888888"; }
+            el.innerText = `Level ${rodLevel}: ${tierName}`;
+            el.style.color = color;
         }
 
         // --- GAMEPLAY INPUT ---
@@ -642,9 +695,7 @@
             const btnAction = document.getElementById('btn-action');
             btnAction.addEventListener('touchstart', (e) => {
                 e.preventDefault();
-                // Cegah klik tembus jika modal shop terbuka
                 if(document.getElementById('shop-modal').style.display === 'block') return;
-
                 if (gameState === "FIGHTING") {
                     handleActionInput();
                     btnAction.style.transform = "translateY(4px)";
@@ -659,9 +710,7 @@
         }
 
         function handleMouseInput(e) {
-            // Cegah klik tembus ke tombol shop/travel/modal
             if (e.target.tagName === 'BUTTON' || e.target.closest('#shop-modal')) return;
-
             if (e.button === 2) performPrimaryAction();
             else if (e.button === 0) handleActionInput();
         }
@@ -676,9 +725,10 @@
             if (gameState === "FIGHTING") {
                 let power = 10 + (rodLevel * 2);
                 fightProgress += power; 
-                
-                if(playerGroup) playerGroup.rotation.z = (Math.random() - 0.5) * 0.3; 
-
+                armTargetAngle = -Math.PI / 1.8; 
+                setTimeout(() => {
+                    if (gameState === "FIGHTING") armTargetAngle = -Math.PI / 4; 
+                }, 100);
                 if (fightProgress >= 100) {
                     fightProgress = 100;
                     winFishing();
@@ -692,7 +742,13 @@
             gameState = "CASTING";
             document.getElementById('status').innerText = "Melempar...";
             document.getElementById('btn-action').innerText = "...";
-            castBobber();
+            armTargetAngle = 0; 
+            setTimeout(() => {
+                castBobber();
+                setTimeout(() => { 
+                    if(gameState === "WAITING") armTargetAngle = -Math.PI / 4; 
+                }, 300);
+            }, 200);
         }
 
         function castBobber() {
@@ -700,12 +756,10 @@
             const bobberGeo = new THREE.BoxGeometry(0.4, 0.4, 0.4);
             const bobberMat = new THREE.MeshLambertMaterial({ color: 0xFF0000 });
             bobber = new THREE.Mesh(bobberGeo, bobberMat);
-            
             const tipPos = new THREE.Vector3();
             rodTip.getWorldPosition(tipPos);
             bobber.position.copy(tipPos);
             scene.add(bobber);
-
             let t = 0;
             const start = tipPos.clone();
             const target = new THREE.Vector3((Math.random()-0.5)*6, 0, (Math.random()-0.5)*6);
@@ -719,6 +773,7 @@
                     document.getElementById('btn-action').innerText = "TUNGGU";
                     document.getElementById('btn-action').style.background = "#555";
                     bobber.position.y = 0; 
+                    armTargetAngle = -Math.PI / 4; 
                     startFishLogic();
                 } else {
                     bobber.position.x = start.x + (target.x - start.x) * t;
@@ -737,14 +792,11 @@
             gameState = "BITING";
             document.getElementById('status').innerText = "!!! KLIK / TAP !!!";
             document.getElementById('status').style.color = "red";
-            
             const btn = document.getElementById('btn-action');
             btn.innerText = "TARIK!";
             btn.style.background = "red";
-
             createSplash(bobber.position);
             currentTargetLoot = getLoot();
-
             biteTimer = setTimeout(() => {
                 if (gameState === "BITING") resetFishing("Ikan Lepas...");
             }, 1500);
@@ -755,14 +807,11 @@
             gameState = "FIGHTING";
             document.getElementById('status').innerText = "TAP TAP TERUS!";
             document.getElementById('status').style.color = "yellow";
-            
             const btn = document.getElementById('btn-action');
             btn.innerText = "TAP!!";
             btn.style.background = "orange";
-            
             fightProgress = 30; 
             document.getElementById('minigame-container').style.display = 'block';
-            
             let decayReduction = (rodLevel - 1) * 0.05;
             fightDecayRate = (0.5 + (currentTargetLoot.difficulty * 0.4)) - decayReduction;
             if (fightDecayRate < 0.1) fightDecayRate = 0.1;
@@ -770,20 +819,15 @@
 
         function updateFightingMinigame() {
             if (gameState !== "FIGHTING") return;
-
             fightProgress -= fightDecayRate;
-
             const bar = document.getElementById('minigame-bar');
             let visualProgress = Math.max(0, Math.min(100, fightProgress));
             bar.style.width = visualProgress + "%";
-            
             if (fightProgress < 30) bar.style.background = "#ff3333";
             else if (fightProgress > 70) bar.style.background = "#33ff33";
             else bar.style.background = "#ffff33";
-
             if (fightProgress >= 100) winFishing();
             else if (fightProgress <= 0) resetFishing("Tali Putus!");
-
             if(bobber) {
                 bobber.position.x += (Math.random()-0.5) * 0.15;
                 bobber.position.z += (Math.random()-0.5) * 0.15;
@@ -798,7 +842,7 @@
             document.getElementById('status').innerText = "Dapat!";
             document.getElementById('status').style.color = "white";
             document.getElementById('btn-action').style.display = "none";
-            if(playerGroup) playerGroup.rotation.z = 0;
+            armTargetAngle = -Math.PI / 2.5; 
             reelInAnimation();
         }
 
@@ -807,7 +851,6 @@
             const start = bobber.position.clone();
             const tipPos = new THREE.Vector3();
             rodTip.getWorldPosition(tipPos);
-
             const itemGeo = new THREE.BoxGeometry(0.8, 0.8, 0.8);
             const itemMat = new THREE.MeshLambertMaterial({ color: currentTargetLoot.color });
             const caughtItem = new THREE.Mesh(itemGeo, itemMat);
@@ -815,19 +858,16 @@
             scene.add(caughtItem);
             scene.remove(bobber); 
             bobber = null;
-
             const animateReel = setInterval(() => {
                 t += 0.05;
                 if (t >= 1) {
                     clearInterval(animateReel);
                     scene.remove(caughtItem);
-                    
                     addToInventory(currentTargetLoot);
-                    
                     gameState = "IDLE"; 
+                    armTargetAngle = -Math.PI / 4; 
                     document.getElementById('status').innerText = `Dapat: ${currentTargetLoot.name}!`;
                     document.getElementById('instruction').innerText = "";
-                    
                     const btn = document.getElementById('btn-action');
                     btn.style.display = "flex";
                     btn.innerText = "MANCING";
@@ -854,16 +894,14 @@
         function resetFishing(msg) {
             if (bobber) { scene.remove(bobber); bobber = null; }
             gameState = "IDLE";
+            armTargetAngle = -Math.PI / 4; 
             document.getElementById('minigame-container').style.display = 'none';
             document.getElementById('status').innerText = msg;
             document.getElementById('status').style.color = "white";
-            
             const btn = document.getElementById('btn-action');
             btn.style.display = "flex";
             btn.innerText = "MANCING";
             btn.style.background = "rgba(255, 50, 50, 0.5)";
-
-            if(playerGroup) playerGroup.rotation.z = 0;
         }
 
         // --- DATA & SAVE SYSTEM ---
@@ -871,10 +909,8 @@
         function addToInventory(item) {
             if (!inventory[item.name]) inventory[item.name] = { count: 0, data: item };
             inventory[item.name].count++;
-            
             saveGame();
             updateInventoryUI();
-            
             if(item.name === "Diamond" || item.name === "Kristal Es") {
                 createExplosion(playerGroup.position, 0x00ffff);
             }
@@ -891,7 +927,7 @@
                     cp: playerCP,
                     rod: rodLevel,
                     biome: currentBiome,
-                    snowUnlocked: snowUnlocked // Save status unlock
+                    snowUnlocked: snowUnlocked 
                 };
                 localStorage.setItem(SAVE_KEY, JSON.stringify(saveObj));
             } catch (e) { console.error("Save failed", e); }
@@ -907,7 +943,6 @@
                     if(parsed.rod) rodLevel = parsed.rod;
                     if(parsed.biome) currentBiome = parsed.biome;
                     if(parsed.snowUnlocked) snowUnlocked = parsed.snowUnlocked;
-                    
                     updateInventoryUI();
                     updateCPDisplay();
                     updateTravelButtonUI();
@@ -933,14 +968,53 @@
             if (!hasItem) list.innerHTML = `<div style="text-align:center; color:#aaa; font-size:12px;">(Kosong)</div>`;
         }
 
+        // --- VISUAL EFFECTS SYSTEM ---
+
+        function updateRodEffects() {
+            if (!rodTip || !playerGroup) return;
+            const tier = Math.floor(rodLevel / 10);
+            if (tier < 1) return; 
+            if (Math.random() > 0.85) return; 
+            const tipPos = new THREE.Vector3();
+            rodTip.getWorldPosition(tipPos);
+            let color = 0xffffff;
+            let type = 'dust'; 
+            if (tier === 1) { color = 0x888888; type='dust'; } 
+            else if (tier === 2) { color = 0xffffff; type='sparkle'; } 
+            else if (tier === 3) { color = 0xffd700; type='sparkle'; } 
+            else if (tier === 4) { color = 0x00ffff; type='sparkle'; } 
+            else if (tier === 5) { color = 0x50C878; type='float'; } 
+            else if (tier >= 6) { color = 0xffffff; type='cloud'; } 
+            let geo, mat;
+            if (type === 'cloud') {
+                geo = new THREE.BoxGeometry(0.3, 0.3, 0.3); 
+                mat = new THREE.MeshLambertMaterial({ color: 0xffffff, transparent: true, opacity: 0.8 });
+            } else {
+                geo = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+                mat = new THREE.MeshBasicMaterial({ color: color });
+            }
+            const p = new THREE.Mesh(geo, mat);
+            p.position.copy(tipPos);
+            p.position.x += (Math.random() - 0.5) * 0.5;
+            p.position.y += (Math.random() - 0.5) * 0.5;
+            p.position.z += (Math.random() - 0.5) * 0.5;
+            if (type === 'cloud') {
+                p.userData = { vel: new THREE.Vector3(0, 0.05, 0), life: 60, type: 'cloud' }; 
+            } else if (type === 'float') {
+                p.userData = { vel: new THREE.Vector3(0, 0.02, 0), life: 40, type: 'float' };
+            } else {
+                p.userData = { vel: new THREE.Vector3((Math.random()-0.5)*0.1, -0.05, (Math.random()-0.5)*0.1), life: 30, type: 'dust' }; 
+            }
+            scene.add(p);
+            rodParticles.push(p);
+        }
+
         // --- WORLD GENERATION ---
 
         function createWorld(type) {
             const blockSize = 2;
             const mapSize = 16; 
-            
             let colorGrass, colorDirt, colorWater, colorBg;
-            
             if (type === 'snow') {
                 colorGrass = 0xffffff; 
                 colorDirt = 0x88ccff;  
@@ -956,23 +1030,19 @@
                 scene.background = new THREE.Color(colorBg);
                 scene.fog = new THREE.Fog(colorBg, 20, 60);
             }
-
             const geometryBox = new THREE.BoxGeometry(blockSize, blockSize, blockSize);
             const grassMat = new THREE.MeshLambertMaterial({ color: colorGrass }); 
             const dirtMat = new THREE.MeshLambertMaterial({ color: colorDirt });  
             const waterMat = new THREE.MeshLambertMaterial({ color: colorWater, transparent: true, opacity: 0.8 }); 
-
             for (let x = -mapSize/2; x < mapSize/2; x++) {
                 for (let z = -mapSize/2; z < mapSize/2; z++) {
                     let isWater = (Math.abs(x) < 4 && Math.abs(z) < 4);
-
                     if (isWater) {
                         const water = new THREE.Mesh(geometryBox, waterMat);
                         water.position.set(x * blockSize, -1, z * blockSize);
                         water.userData = { originalY: -1 };
                         scene.add(water);
                         waterBlocks.push(water);
-
                         const sand = new THREE.Mesh(geometryBox, dirtMat);
                         sand.position.set(x * blockSize, -1 - blockSize, z * blockSize);
                         scene.add(sand);
@@ -984,7 +1054,6 @@
                         grass.receiveShadow = true;
                         scene.add(grass);
                         terrainBlocks.push(grass);
-
                         const dirt = new THREE.Mesh(geometryBox, dirtMat);
                         dirt.position.set(x * blockSize, -blockSize, z * blockSize);
                         scene.add(dirt);
@@ -992,7 +1061,6 @@
                     }
                 }
             }
-            
             if (type === 'snow') {
                 createTree(-10, -10, 0x555555, 0xffffff);
                 createTree(10, -8, 0x555555, 0xffffff);
@@ -1010,7 +1078,6 @@
             trunk.castShadow = true;
             scene.add(trunk);
             terrainBlocks.push(trunk);
-
             const leafGeo = new THREE.BoxGeometry(5, 5, 5);
             const leafMat = new THREE.MeshLambertMaterial({ color: leafColor });
             const leaf = new THREE.Mesh(leafGeo, leafMat);
@@ -1022,28 +1089,32 @@
 
         function createPlayer() {
             if(playerGroup) scene.remove(playerGroup); 
-
             playerGroup = new THREE.Group();
             const bodyMat = new THREE.MeshLambertMaterial({ color: 0x0000AA }); 
             const body = new THREE.Mesh(new THREE.BoxGeometry(1.5, 3, 1), bodyMat);
-            body.position.y = 1.5; playerGroup.add(body);
-
+            body.position.y = 1.5; 
+            playerGroup.add(body);
             const head = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshLambertMaterial({ color: 0xffccaa }));
-            head.position.y = 3.5; playerGroup.add(head);
-
+            head.position.y = 3.5; 
+            playerGroup.add(head);
+            rightArmGroup = new THREE.Group();
+            rightArmGroup.position.set(0.8, 2.8, 0); 
+            playerGroup.add(rightArmGroup);
             const arm = new THREE.Mesh(new THREE.BoxGeometry(0.5, 2, 0.5), bodyMat);
-            arm.position.set(1, 2, 0.5); arm.rotation.x = -Math.PI / 4; playerGroup.add(arm);
-
-            const rodColor = rodLevel > 1 ? 0xFFD700 : 0x5c4033;
+            arm.position.y = -0.8; 
+            rightArmGroup.add(arm);
+            const rodColor = getRodColor(rodLevel);
             const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.1, 6, 8), new THREE.MeshLambertMaterial({ color: rodColor }));
-            rod.rotation.x = Math.PI / 2; rod.rotation.z = -Math.PI / 8; 
-            rod.position.set(1, 4, 2); playerGroup.add(rod);
-
-            rodTip = new THREE.Object3D(); rodTip.position.set(0, 3, 0); rod.add(rodTip);
-            
-            playerGroup.position.set(0, 1, 8); playerGroup.rotation.y = Math.PI;
+            rod.rotation.x = Math.PI / 2; 
+            rod.position.set(0, -1.5, 1.5); 
+            rightArmGroup.add(rod);
+            rodTip = new THREE.Object3D(); 
+            rodTip.position.set(0, 3, 0); 
+            rod.add(rodTip);
+            rightArmGroup.rotation.x = armAngle; 
+            playerGroup.position.set(0, 1, 8); 
+            playerGroup.rotation.y = Math.PI;
             scene.add(playerGroup);
-
             const lineGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,0)]);
             fishingLine = new THREE.Line(lineGeo, new THREE.LineBasicMaterial({ color: 0x000000 }));
             scene.add(fishingLine);
@@ -1073,6 +1144,9 @@
             const time = Date.now() * 0.001;
 
             if (playerGroup && gameState === "IDLE") { 
+                const breath = Math.sin(time * 2) * 0.05;
+                armTargetAngle = -Math.PI / 4 + breath;
+
                 const oldPos = playerGroup.position.clone();
                 if (keysPressed['KeyW']) { playerGroup.position.z -= playerSpeed; playerGroup.rotation.y = Math.PI; }
                 if (keysPressed['KeyS']) { playerGroup.position.z += playerSpeed; playerGroup.rotation.y = 0; }
@@ -1084,16 +1158,12 @@
                 if (keysPressed['KeyS'] && keysPressed['KeyA']) playerGroup.rotation.y = -Math.PI * 0.25;
                 if (keysPressed['KeyS'] && keysPressed['KeyD']) playerGroup.rotation.y = Math.PI * 0.25;
 
-                // --- PERBAIKAN LOGIKA COLLISION ---
-                // Menggunakan batas yang sedikit lebih longgar agar tidak gampang nyangkut
-                const waterLimit = 7.6; // Batas air
-                const worldLimit = 14.4; // Batas dunia
+                const waterLimit = 7.6; 
+                const worldLimit = 14.4; 
 
-                // Cek apakah masuk air?
                 if (Math.abs(playerGroup.position.x) < waterLimit && Math.abs(playerGroup.position.z) < waterLimit) {
                     playerGroup.position.copy(oldPos); 
                 }
-                // Cek apakah keluar map?
                 if (Math.abs(playerGroup.position.x) > worldLimit || Math.abs(playerGroup.position.z) > worldLimit) {
                     playerGroup.position.copy(oldPos); 
                 }
@@ -1101,6 +1171,24 @@
                 camera.position.x += (playerGroup.position.x + 20 - camera.position.x) * 0.1;
                 camera.position.z += (playerGroup.position.z + 20 - camera.position.z) * 0.1;
             }
+
+            if (rightArmGroup) {
+                armAngle += (armTargetAngle - armAngle) * 0.1;
+                rightArmGroup.rotation.x = armAngle;
+            }
+            
+            updateRodEffects();
+            for (let i = rodParticles.length - 1; i >= 0; i--) {
+                const p = rodParticles[i];
+                p.position.add(p.userData.vel);
+                p.userData.life--;
+                p.scale.multiplyScalar(0.95);
+                if (p.userData.life <= 0) {
+                    scene.remove(p);
+                    rodParticles.splice(i, 1);
+                }
+            }
+
 
             if (gameState === "FIGHTING") updateFightingMinigame();
 
