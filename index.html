@@ -211,29 +211,37 @@
             width: 100%; height: 100%; pointer-events: none; z-index: 50;
         }
         
-        .dpad {
+        /* ANALOG JOYSTICK STYLE */
+        #joystick-zone {
             position: absolute; bottom: 30px; left: 30px;
-            width: 160px; height: 160px; pointer-events: auto;
+            width: 140px; height: 140px;
+            pointer-events: auto;
         }
-        
-        .dpad-btn {
-            position: absolute; background: rgba(0, 0, 0, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            border-radius: 12px; width: 50px; height: 50px;
-            display: flex; justify-content: center; align-items: center;
-            font-size: 24px; color: white;
-            backdrop-filter: blur(4px);
-        }
-        .dpad-btn:active { background: rgba(255, 255, 255, 0.4); }
 
-        .d-up { top: 0; left: 55px; }
-        .d-down { bottom: 0; left: 55px; }
-        .d-left { top: 55px; left: 0; }
-        .d-right { top: 55px; right: 0; }
+        #joystick-base {
+            width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            position: relative;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        }
+
+        #joystick-stick {
+            width: 50px; height: 50px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            transition: 0.1s; /* Smooth return */
+        }
 
         .action-btn-container {
             pointer-events: auto;
-            position: absolute; bottom: 40px; right: 40px; /* Pojok kanan bawah nyaman */
+            position: absolute; bottom: 40px; right: 40px; 
         }
         
         .action-btn {
@@ -274,28 +282,24 @@
             .mobile-controls { display: block; }
             #controls-hint { display: none; }
             
-            /* Penyesuaian Tombol Game (Toko/Travel) agar tidak menabrak kontrol */
             .game-btn {
                 width: 50px; height: 50px;
                 font-size: 10px;
-                bottom: auto; top: 10px; /* Pindah ke atas */
+                bottom: auto; top: 10px;
             }
-            #shop-btn { right: 170px; } /* Geser agar tidak ketutup inventory */
+            #shop-btn { right: 170px; }
             #travel-btn { right: 230px; }
 
-            /* Inventory lebih ringkas */
             #inventory {
                 max-height: 150px;
                 min-width: 130px;
                 font-size: 11px;
             }
             
-            /* Minigame agak ke atas */
             #minigame-container { bottom: 20px; width: 40%; left: 30%; transform: none; }
             #instruction { bottom: 80px; font-size: 16px; }
         }
 
-        /* --- MEDIA QUERY KHUSUS MOBILE PORTRAIT (FORCE ROTATE) --- */
         @media (max-width: 900px) and (orientation: portrait) {
             #rotate-overlay { display: flex; }
         }
@@ -379,12 +383,11 @@
 
     <!-- MOBILE CONTROLS (Landscape Optimized) -->
     <div class="mobile-controls" id="mobile-ui">
-        <!-- D-Pad Kiri Bawah -->
-        <div class="dpad">
-            <div class="dpad-btn d-up" id="btn-up">▲</div>
-            <div class="dpad-btn d-down" id="btn-down">▼</div>
-            <div class="dpad-btn d-left" id="btn-left">◀</div>
-            <div class="dpad-btn d-right" id="btn-right">▶</div>
+        <!-- Analog Joystick -->
+        <div id="joystick-zone">
+            <div id="joystick-base">
+                <div id="joystick-stick"></div>
+            </div>
         </div>
         
         <!-- Action Button Kanan Bawah -->
@@ -411,7 +414,15 @@
         const keysPressed = {};
         const playerSpeed = 0.15;
         let cheatBuffer = "";
+        let mobileCheatBuffer = ""; 
+        let lastJoystickState = ""; // Untuk deteksi cheat (L/R)
         
+        // Joystick Var
+        let joystickActive = false;
+        let joyStartX = 0;
+        let joyStartY = 0;
+        const joyRadius = 40;
+
         // State Game
         let gameState = "IDLE"; 
         let biteTimer = 0;
@@ -488,7 +499,7 @@
             document.addEventListener('contextmenu', event => event.preventDefault()); 
             document.addEventListener('mousedown', handleMouseInput);
             document.addEventListener('keydown', (e) => {
-                // Cheat Listener
+                // Cheat Listener Keyboard
                 if (e.key.length === 1) { 
                     cheatBuffer += e.key.toLowerCase();
                     if (cheatBuffer.length > 20) cheatBuffer = cheatBuffer.slice(-20);
@@ -540,7 +551,7 @@
                 btnUpgrade.disabled = true;
                 desc.innerText = `Level ${rodLevel} (Legendaris)`;
             } else {
-                // HARGA DISKON: Level * 25 (Sebelumnya 500)
+                // HARGA DISKON
                 const cost = rodLevel * 25;
                 btnUpgrade.innerText = `BELI (${cost} CP)`;
                 btnUpgrade.disabled = false;
@@ -638,15 +649,10 @@
 
         function upgradeRod() {
             if (rodLevel >= MAX_ROD_LEVEL) return;
-            
-            // HARGA DISKON: Level * 25 (Sebelumnya 500)
             const cost = rodLevel * 25;
-            
             if (playerCP >= cost) {
                 playerCP -= cost;
                 rodLevel++;
-                // Hapus alert biar spam klik lebih cepat enak
-                // alert(`Pancingan diupgrade ke Level ${rodLevel}!`); 
                 saveGame();
                 updateCPDisplay();
                 updateShopUI();
@@ -654,6 +660,23 @@
                 if(playerGroup) { createPlayer(); }
             } else {
                 alert(`CP tidak cukup! Butuh ${cost} CP.`);
+            }
+        }
+
+        // --- SISTEM CHEAT MOBILE ---
+        function handleMobileCheat(char) {
+            mobileCheatBuffer += char;
+            if (mobileCheatBuffer.length > 20) mobileCheatBuffer = mobileCheatBuffer.slice(-20);
+            
+            // Password: Kiri(L), Kanan(R), Kiri(L), Kanan(R), Toko(S), Pancing(P)
+            if (mobileCheatBuffer.endsWith("LRLRSP")) {
+                activateCheat();
+                mobileCheatBuffer = "";
+                closeShop();
+                const x = document.getElementById("toast");
+                x.innerText = "CHEAT MOBILE AKTIF! SULTAN MODE!";
+                x.style.visibility = "visible";
+                setTimeout(function(){ x.style.visibility = "hidden"; }, 3000);
             }
         }
 
@@ -681,20 +704,55 @@
             el.style.color = color;
         }
 
-        // --- GAMEPLAY INPUT ---
+        // --- GAMEPLAY INPUT (JOYSTICK) ---
 
         function setupTouchControls() {
-            const setupBtn = (id, code) => {
-                const el = document.getElementById(id);
-                el.addEventListener('touchstart', (e)=>{ e.preventDefault(); keysPressed[code]=true; });
-                el.addEventListener('touchend', (e)=>{ e.preventDefault(); keysPressed[code]=false; });
-            };
-            setupBtn('btn-up', 'KeyW'); setupBtn('btn-down', 'KeyS');
-            setupBtn('btn-left', 'KeyA'); setupBtn('btn-right', 'KeyD');
+            const joyZone = document.getElementById('joystick-zone');
+            const joyStick = document.getElementById('joystick-stick');
+            const joyBase = document.getElementById('joystick-base');
 
+            // Handle Joystick
+            joyZone.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                joystickActive = true;
+                const touch = e.changedTouches[0];
+                
+                // Ambil pusat dari Base
+                const rect = joyBase.getBoundingClientRect();
+                joyStartX = rect.left + rect.width / 2;
+                joyStartY = rect.top + rect.height / 2;
+                
+                updateJoystickLogic(touch.clientX, touch.clientY, joyStick);
+            });
+
+            joyZone.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                if(!joystickActive) return;
+                const touch = e.changedTouches[0];
+                updateJoystickLogic(touch.clientX, touch.clientY, joyStick);
+            });
+
+            const endJoystick = (e) => {
+                e.preventDefault();
+                joystickActive = false;
+                joyStick.style.transform = `translate(-50%, -50%)`; // Reset visual
+                
+                // Reset Movement Keys
+                keysPressed['KeyW'] = false;
+                keysPressed['KeyS'] = false;
+                keysPressed['KeyA'] = false;
+                keysPressed['KeyD'] = false;
+                lastJoystickState = ""; // Reset cheat state detector
+            };
+
+            joyZone.addEventListener('touchend', endJoystick);
+            joyZone.addEventListener('touchcancel', endJoystick);
+
+            // Handle Tombol Pancing
             const btnAction = document.getElementById('btn-action');
             btnAction.addEventListener('touchstart', (e) => {
                 e.preventDefault();
+                handleMobileCheat('P'); 
                 if(document.getElementById('shop-modal').style.display === 'block') return;
                 if (gameState === "FIGHTING") {
                     handleActionInput();
@@ -707,6 +765,49 @@
                 e.preventDefault();
                 btnAction.style.transform = "translateY(0px)";
             });
+
+            // Handle Tombol Toko (untuk cheat)
+            const btnShop = document.getElementById('shop-btn');
+            btnShop.addEventListener('click', () => { handleMobileCheat('S'); });
+        }
+
+        function updateJoystickLogic(x, y, stickElement) {
+            const dx = x - joyStartX;
+            const dy = y - joyStartY;
+            const distance = Math.min(Math.sqrt(dx*dx + dy*dy), joyRadius);
+            const angle = Math.atan2(dy, dx);
+            
+            // Visual Movement
+            const moveX = Math.cos(angle) * distance;
+            const moveY = Math.sin(angle) * distance;
+            stickElement.style.transform = `translate(calc(-50% + ${moveX}px), calc(-50% + ${moveY}px))`;
+            
+            // Input Logic (Threshold 15px)
+            if (distance > 15) {
+                keysPressed['KeyW'] = (Math.sin(angle) < -0.3); // Atas
+                keysPressed['KeyS'] = (Math.sin(angle) > 0.3);  // Bawah
+                
+                const isLeft = (Math.cos(angle) < -0.3);
+                const isRight = (Math.cos(angle) > 0.3);
+                
+                keysPressed['KeyA'] = isLeft; 
+                keysPressed['KeyD'] = isRight;
+
+                // Analog Cheat Detection (Left/Right swipe)
+                if (isLeft && lastJoystickState !== "L") {
+                    handleMobileCheat('L');
+                    lastJoystickState = "L";
+                } else if (isRight && lastJoystickState !== "R") {
+                    handleMobileCheat('R');
+                    lastJoystickState = "R";
+                } else if (!isLeft && !isRight) {
+                    lastJoystickState = ""; // Reset jika di tengah/atas/bawah
+                }
+            } else {
+                keysPressed['KeyW'] = false; keysPressed['KeyS'] = false;
+                keysPressed['KeyA'] = false; keysPressed['KeyD'] = false;
+                lastJoystickState = "";
+            }
         }
 
         function handleMouseInput(e) {
